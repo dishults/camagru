@@ -1,0 +1,41 @@
+{% extends "members/base.html" %}
+{% load static %}
+
+{% block script %}
+<script src="{% static 'members/login.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+<h1>Login</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="form-row align-items-center" id="inputFields">
+        <div class="col-auto">
+            <div class="fieldWrapper">
+                {{ form.username.errors }}
+                <label class="form-label" for="{{ form.username.id_for_label }}">Username:</label>
+                {{ form.username }}
+            </div>
+        </div>
+        <div class="col-auto">
+            <div class="fieldWrapper">
+                {{ form.password.errors }}
+                <label class="form-label" for="{{ form.password.id_for_label }}">Password:</label>
+                {{ form.password }}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary mb-2">Submit</button>
+    </div>
+
+    <div class="form-check">
+        <div class="fieldWrapper">
+            <label class="form-check-label" for="{{ form.checkbox.id_for_label }}">Register</label>
+            {{ form.checkbox }}
+        </div>
+    </div>
+</form>
+{% endblock %}
