@@ -13,10 +13,46 @@
     {% endblock %}
 </head>
 
+<header style="padding: 30px;">
+    <a href="{% url 'login' %}"><button class='btn btn-outline-primary float-start'>Login/Signup</button></a>
+    {% if user.is_authenticated %}
+    <a href="{% url 'logout' %}"><button class='btn btn-outline-success float-end'>Logout</button></a>
+    {% endif %}
+</header>
+
 <body>
     <div class="container">
-        {% block body %}
-        {% endblock %}
+        {% block page_name %}{% endblock %}
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" role="alert" style="margin-top: 40px">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-row align-items-center" id="inputFields">
+                {% for field in form %}
+                <div class="col-auto">
+                    <div class="fieldWrapper">
+                        {{ field.errors }}
+                        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label|title }}</label>
+                        {{ field }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary mb-2">Submit</button>
+            </div>
+        </form>
+
+        {% block body %}{% endblock %}
     </div>
 </body>
 
