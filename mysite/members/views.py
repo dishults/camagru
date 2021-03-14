@@ -45,6 +45,8 @@ class SignupView(FormView):
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
+            messages.warning(
+                request, "You've already signed up and logged in.")
             return redirect(LoginView.success_url)
         return super().get(request, *args, **kwargs)
 
