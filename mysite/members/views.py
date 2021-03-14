@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
@@ -10,16 +11,16 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from django.views.generic import FormView
 
-from members.forms import LoginForm, SignupForm
+from members.forms import SigninForm, SignupForm, PasswordResetCustomForm, SetPasswordCustomForm
 
 from .tokens import account_activation_token
 
 
-class LoginView(FormView):
-    template_name = 'members/login.html'
-    context_object_name = 'members_login_view'
-    form_class = LoginForm
-    success_url = '/login'  # galery
+class SigninView(FormView):
+    template_name = 'members/signin.html'
+    context_object_name = 'members_signin_view'
+    form_class = SigninForm
+    success_url = '/signin'  # galery
 
     def form_valid(self, form):
         if self.request.user == form.user_cache:
@@ -30,11 +31,11 @@ class LoginView(FormView):
         return super().form_valid(form)
 
 
-def logout_view(request):
+def signout_view(request):
     if request.user.is_authenticated:
         logout(request)
         messages.success(request, "You've been logged out.")
-    return redirect(LoginView.success_url)
+    return redirect(SigninView.success_url)
 
 
 class SignupView(FormView):
@@ -47,7 +48,7 @@ class SignupView(FormView):
         if request.user.is_authenticated:
             messages.warning(
                 request, "You've already signed up and logged in.")
-            return redirect(LoginView.success_url)
+            return redirect(SigninView.success_url)
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -81,7 +82,27 @@ def activate(request, uidb64, token):
         user.save()
         messages.success(
             request, "Thank you for your email confirmation. "
-            + "Now you can login to your account.")
-        return redirect('login')
+            + "Now you can signin to your account.")
+        return redirect('signin')
     else:
         return HttpResponse('Activation link is invalid!')
+
+
+class PasswordResetCustomView(PasswordResetView):
+    email_template_name = 'members/password_reset_email.html'
+    form_class = PasswordResetCustomForm
+    subject_template_name = 'members/password_reset_subject.txt'
+    template_name = 'members/password_reset_form.html'
+
+
+class PasswordResetCustomDoneView(PasswordResetDoneView):
+    template_name = 'members/password_reset_done.html'
+
+
+class PasswordResetCustomConfirmView(PasswordResetConfirmView):
+    form_class = SetPasswordCustomForm
+    template_name = 'members/password_reset_confirm.html'
+
+
+class PasswordResetCustomCompleteView(PasswordResetCompleteView):
+    template_name = 'members/password_reset_complete.html'
