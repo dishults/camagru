@@ -21,6 +21,6 @@ class Command(BaseCommand):
             users.append(self.keep)
         else:
             users = self.keep
-        queryset.delete()
+        deleted = queryset.delete()
         self.stdout.write(self.style.SUCCESS(
-            f"Successfully deleted users: {users}"))
+            f"Deleted {deleted[0]} users. Kept: {users}"))

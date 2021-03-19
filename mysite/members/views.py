@@ -1,6 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout
-from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from django.contrib.auth.views import (
+    PasswordResetView, PasswordResetDoneView,
+    PasswordResetConfirmView, PasswordResetCompleteView
+)
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
@@ -11,7 +14,10 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from django.views.generic import FormView
 
-from members.forms import SigninForm, SignupForm, PasswordResetCustomForm, SetPasswordCustomForm
+from members.forms import (
+    SigninForm, SignupForm, SettingsForm,
+    PasswordResetCustomForm, SetPasswordCustomForm
+)
 
 from .tokens import account_activation_token
 
@@ -24,17 +30,17 @@ class SigninView(FormView):
 
     def form_valid(self, form):
         if self.request.user == form.user_cache:
-            messages.warning(self.request, "You've already logged in.")
+            messages.warning(self.request, "You've already signed in")
         else:
             login(self.request, form.user_cache)
-            messages.success(self.request, "You've logged in successfully.")
+            messages.success(self.request, "You've signed in successfully")
         return super().form_valid(form)
 
 
 def signout_view(request):
     if request.user.is_authenticated:
         logout(request)
-        messages.success(request, "You've been logged out.")
+        messages.success(request, "You've been signed out")
     return redirect(SigninView.success_url)
 
 
@@ -47,7 +53,7 @@ class SignupView(FormView):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             messages.warning(
-                request, "You've already signed up and logged in.")
+                request, "You've already signed up and signed in")
             return redirect(SigninView.success_url)
         return super().get(request, *args, **kwargs)
 
@@ -86,6 +92,28 @@ def activate(request, uidb64, token):
         return redirect('signin')
     else:
         return HttpResponse('Activation link is invalid!')
+
+
+class SettingsView(FormView):
+    template_name = 'members/settings.html'
+    context_object_name = 'members_settings_view'
+    form_class = SettingsForm
+    success_url = 'settings'
+
+    def form_valid(self, form):
+        password = form.cleaned_data.get('password')
+        if self.request.user.check_password(password):
+            for attribute in ('username', 'email'):
+                new_value = form.cleaned_data.get(attribute)
+                if new_value:
+                    setattr(self.request.user, attribute, new_value)
+            self.request.user.save()
+            messages.success(
+                self.request, f"You've successfully updated your profile"
+            )
+        else:
+            messages.warning(self.request, f"Invalid password")
+        return super().form_valid(form)
 
 
 class PasswordResetCustomView(PasswordResetView):

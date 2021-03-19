@@ -1,0 +1,23 @@
+{% extends "members/base.html" %}
+
+{% block title %}
+Settings
+{% endblock %}
+
+{% block page_name %}
+<h1>Settings</h1>
+{% endblock %}
+
+{% block body %}
+<h5>Type new values into fields that you want to change</h5>
+<form method="post">
+    {% csrf_token %}
+    <div class="col-md-4">
+        {{ form.as_p }}
+    </div>
+
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
+{% endblock %}
