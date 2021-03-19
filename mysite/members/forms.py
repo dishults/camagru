@@ -1,3 +1,4 @@
+from django.contrib.auth import password_validation
 from django.contrib.auth.models import User
 from django import forms
 from django.contrib.auth.forms import (
@@ -38,14 +39,28 @@ class SettingsForm(ModelForm):
     username = UsernameField(required=False)
 
     password = forms.CharField(
-        strip=False,
+        required=True, strip=False,
         widget=forms.PasswordInput(attrs={'autocomplete': 'current-password'}),
+        help_text="Required"
+    )
+
+    new_password = forms.CharField(
+        required=False, strip=False,
+        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
+        help_text=password_validation.password_validators_help_text_html()
+    )
+
+    confirm_password = forms.CharField(
+        required=False, strip=False,
+        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
+        help_text="Enter the same password as above, for verification."
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         update_attrs_for_bootstrap(
-            self.fields, ['username', 'email', 'password'])
+            self.fields, ['username', 'email', 'password',
+                          'new_password', 'confirm_password'])
 
     class Meta:
         model = User

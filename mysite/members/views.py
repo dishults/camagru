@@ -1,11 +1,12 @@
 from django.contrib import messages
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, password_validation
 from django.contrib.auth.views import (
     PasswordResetView, PasswordResetDoneView,
     PasswordResetConfirmView, PasswordResetCompleteView
 )
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -103,10 +104,17 @@ class SettingsView(FormView):
     def form_valid(self, form):
         password = form.cleaned_data.get('password')
         if self.request.user.check_password(password):
+            try:
+                self.set_new_password(form)
+            except ValidationError as errors:
+                form.add_error('new_password', errors)
+                return super().form_invalid(form)
+
             for attribute in ('username', 'email'):
                 new_value = form.cleaned_data.get(attribute)
                 if new_value:
                     setattr(self.request.user, attribute, new_value)
+
             self.request.user.save()
             messages.success(
                 self.request, f"You've successfully updated your profile"
@@ -114,6 +122,25 @@ class SettingsView(FormView):
         else:
             messages.warning(self.request, f"Invalid password")
         return super().form_valid(form)
+
+    def set_new_password(self, form):
+        new_password = form.cleaned_data.get("new_password")
+        confirm_password = form.cleaned_data.get("confirm_password")
+
+        if new_password and confirm_password and new_password == confirm_password:
+            password_validation.validate_password(
+                new_password, self.request.user
+            )
+            self.request.user.set_password(new_password)
+            messages.success(
+                self.request,
+                f"Your password has been updated. You are now signed out."
+            )
+        # Both not empty
+        elif not (not new_password and not confirm_password):
+            raise ValidationError(
+                "The two password fields didn't match."
+            )
 
 
 class PasswordResetCustomView(PasswordResetView):
