@@ -15,7 +15,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from django.views.generic import FormView
 
-from members.forms import (
+from .forms import (
     SigninForm, SignupForm, SettingsForm,
     PasswordResetCustomForm, SetPasswordCustomForm
 )
@@ -27,7 +27,14 @@ class SigninView(FormView):
     template_name = 'members/signin.html'
     context_object_name = 'members_signin_view'
     form_class = SigninForm
-    success_url = '/signin'  # galery
+    success_url = '/'
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            messages.warning(
+                request, "You've already signed in")
+            return redirect(self.success_url)
+        return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         if self.request.user == form.user_cache:
@@ -49,7 +56,7 @@ class SignupView(FormView):
     template_name = 'members/signup.html'
     context_object_name = 'members_signup_view'
     form_class = SignupForm
-    success_url = '/signup'  # galery
+    success_url = '/'
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
