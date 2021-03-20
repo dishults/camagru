@@ -6,11 +6,7 @@ from django.contrib.auth.forms import (
     PasswordResetForm, SetPasswordForm, UsernameField
 )
 from django.forms.models import ModelForm
-
-
-def update_attrs_for_bootstrap(fields, names):
-    for name in names:
-        fields[name].widget.attrs.update({'class': 'form-control'})
+from utils import update_attrs_for_bootstrap
 
 
 class SigninForm(AuthenticationForm):
@@ -25,14 +21,14 @@ class SignupForm(UserCreationForm):
     email = forms.EmailField(max_length=254, widget=forms.EmailInput(
         attrs={'autocomplete': 'email'}))
 
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         update_attrs_for_bootstrap(
             self.fields, ['username', 'email', 'password1', 'password2'])
-
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password1', 'password2']
 
 
 class SettingsForm(ModelForm):
@@ -56,15 +52,15 @@ class SettingsForm(ModelForm):
         help_text="Enter the same password as above, for verification."
     )
 
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password']
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         update_attrs_for_bootstrap(
             self.fields, ['username', 'email', 'password',
                           'new_password', 'confirm_password'])
-
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password']
 
 
 class PasswordResetCustomForm(PasswordResetForm):
