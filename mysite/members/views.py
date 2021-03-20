@@ -124,10 +124,10 @@ class SettingsView(FormView):
 
             self.request.user.save()
             messages.success(
-                self.request, f"You've successfully updated your profile"
+                self.request, "You've successfully updated your profile"
             )
         else:
-            messages.warning(self.request, f"Invalid password")
+            messages.warning(self.request, "Invalid password")
         return super().form_valid(form)
 
     def set_new_password(self, form):
@@ -141,7 +141,7 @@ class SettingsView(FormView):
             self.request.user.set_password(new_password)
             messages.success(
                 self.request,
-                f"Your password has been updated. You are now signed out."
+                "Your password has been updated. You are now signed out."
             )
         # Both not empty
         elif not (not new_password and not confirm_password):

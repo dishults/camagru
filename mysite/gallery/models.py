@@ -8,7 +8,8 @@ class Image(models.Model):
 
     date_created = models.DateTimeField(auto_now_add=True)
 
-    image = models.ImageField(upload_to='images', validators=[validate_size])
+    image = models.ImageField(
+        upload_to='static/images', validators=[validate_size])
 
     notify = models.BooleanField(default=True)
 
