@@ -11,8 +11,6 @@ class Image(models.Model):
     image = models.ImageField(
         upload_to='static/images', validators=[validate_size])
 
-    notify = models.BooleanField(default=True)
-
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):

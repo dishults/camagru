@@ -19,26 +19,28 @@ class GalleryView(ListView, FormView):
 
     def form_valid(self, form):
         image = form.cleaned_data.get('image')
+        user = self.request.user
         button = self.request.POST.get('button')
         if button == 'like':
             _, created = Like.objects.get_or_create(
-                image=image, user=self.request.user)
+                image=image, user=user)
             if not created:
                 try:
                     Like.objects.get(
-                        image=image, user=self.request.user).delete()
+                        image=image, user=user).delete()
                 except ObjectDoesNotExist:
                     pass
         elif button == 'comment' and form.cleaned_data['comment']:
             saved = form.save(commit=False)
-            saved.user = self.request.user
+            saved.user = user
             saved.save()
-            if image and image.user != self.request.user and image.user.email:
+            if image and image.user != user and image.user.email\
+                    and image.user.member and image.user.member.notify:
                 EmailMessage(
                     subject='New picture comment',
                     body=render_to_string('gallery/notify.html', {
                         'image': image,
-                        'from_user': self.request.user,
+                        'from_user': user,
                         'domain': get_current_site(self.request).domain,
                     }),
                     to=[image.user.email]
