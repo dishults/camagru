@@ -26,6 +26,22 @@ Gallery
         {% endfor %}
     </ul>
     {% if user.is_authenticated %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="col-md-4">
+            {{ form.non_field_errors }}
+            <div class="fieldWrapper">
+                {{ form.comment.errors }}
+                <label for="{{ form.comment.id_for_label }}">{{ form.comment.label|title }}:</label>
+                {{ form.comment }}
+            </div>
+        </div>
+
+        <div class="col-auto">
+            <input type="hidden" name="image" id="id_image" value="{{ image.id }}">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
     <!-- Add comment form box and add like -->
     {% endif %}
 
