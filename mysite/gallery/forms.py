@@ -1,11 +1,14 @@
-from django.forms.models import ModelForm
+from django import forms
 
 from utils import update_attrs_for_bootstrap
 
 from .models import Comment, Like
 
 
-class CommentForm(ModelForm):
+class CommentForm(forms.ModelForm):
+
+    comment = forms.CharField(widget=forms.Textarea(
+        attrs={'rows': 3, 'cols': 1}), max_length=450)
 
     class Meta:
         model = Comment
@@ -16,7 +19,7 @@ class CommentForm(ModelForm):
         update_attrs_for_bootstrap(self.fields, ['comment'])
 
 
-class LikeForm(ModelForm):
+class LikeForm(forms.ModelForm):
 
     class Meta:
         model = Like

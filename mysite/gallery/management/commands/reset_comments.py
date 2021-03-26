@@ -20,4 +20,4 @@ class Command(BaseCommand):
         queryset = self.queryset.order_by('id')[:delete]
         deleted = Comment.objects.filter(id__in=queryset).delete()
         self.stdout.write(self.style.SUCCESS(
-            f"Deleted {deleted[0]} comments. Kept: {keep}"))
+            f"Deleted {deleted[0]} comments. Kept: {min(self.queryset.count(), keep)}"))

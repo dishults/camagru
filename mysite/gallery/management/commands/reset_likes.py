@@ -20,4 +20,4 @@ class Command(BaseCommand):
         queryset = self.queryset.order_by('id')[:delete]
         deleted = Like.objects.filter(id__in=queryset).delete()
         self.stdout.write(self.style.SUCCESS(
-            f"Deleted {deleted[0]} likes. Kept: {keep}"))
+            f"Deleted {deleted[0]} likes. Kept: {min(self.queryset.count(), keep)}"))

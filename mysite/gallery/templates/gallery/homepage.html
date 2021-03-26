@@ -13,9 +13,37 @@ Gallery
 <img src="{{ image.image }}" class="rounded mx-auto d-block">
 
 <div id="images" class="mx-auto">
+
+    {% if user.is_authenticated %}
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="image" id="id_image" value="{{ image.id }}">
+
+        <div id="likes" class="col-auto text-center">
+            <button type="submit" name="button" class="btn" value="like">{{ image.like_set.count }} <span
+                    class=emoji>&#x1F44D;</span></button>
+        </div>
+
+        <div class="col-auto">
+            <h4>Leave a comment</h4>
+            {{ form.non_field_errors }}
+            <div class="fieldWrapper input-group">
+                {{ form.comment.errors }}
+                {{ form.comment }}
+                <button type="comment" name="button" class="btn btn-outline-primary" value="comment">SEND</button>
+            </div>
+        </div>
+
+        <div class="col-auto">
+        </div>
+    </form>
+
+    {% else %}
     <div id="likes" class="text-center">{{ image.like_set.count }} <span class=emoji>&#x1F44D;</span></div>
+    {% endif %}
+
     <ul id="comments" class="list-group list-group-flush">
-        {% for comment in image.comment_set.all %}
+        {% for comment in image.comment_set.all reversed %}
         <li class="list-group-item">
             {{ comment.comment }}
             <p class="mb-1">
@@ -25,25 +53,6 @@ Gallery
         </li>
         {% endfor %}
     </ul>
-    {% if user.is_authenticated %}
-    <form method="post">
-        {% csrf_token %}
-        <div class="col-md-4">
-            {{ form.non_field_errors }}
-            <div class="fieldWrapper">
-                {{ form.comment.errors }}
-                <label for="{{ form.comment.id_for_label }}">{{ form.comment.label|title }}:</label>
-                {{ form.comment }}
-            </div>
-        </div>
-
-        <div class="col-auto">
-            <input type="hidden" name="image" id="id_image" value="{{ image.id }}">
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
-    </form>
-    <!-- Add comment form box and add like -->
-    {% endif %}
 
     {% empty %}
     <p>No images yet.</p>

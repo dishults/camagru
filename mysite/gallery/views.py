@@ -1,5 +1,6 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import ListView, FormView
-from .models import Image
+from .models import Image, Like
 
 from .forms import CommentForm
 
@@ -12,7 +13,19 @@ class GalleryView(ListView, FormView):
     success_url = '/'
 
     def form_valid(self, form):
-        saved = form.save(commit=False)
-        saved.user = self.request.user
-        saved.save()
+        button = self.request.POST.get('button')
+        if button == 'like':
+            image = form.cleaned_data.get('image')
+            _, created = Like.objects.get_or_create(
+                image=image, user=self.request.user)
+            if not created:
+                try:
+                    Like.objects.get(
+                        image=image, user=self.request.user).delete()
+                except ObjectDoesNotExist:
+                    pass
+        elif button == 'comment' and form.cleaned_data['comment']:
+            saved = form.save(commit=False)
+            saved.user = self.request.user
+            saved.save()
         return super().form_valid(form)
