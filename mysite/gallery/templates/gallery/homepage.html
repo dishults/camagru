@@ -10,6 +10,7 @@ Gallery
 
 {% block body %}
 {% for image in object_list %}
+<a name="{{ image.id }}"></a>
 <img src="{{ image.image }}" class="rounded mx-auto d-block">
 
 <div id="images" class="mx-auto">

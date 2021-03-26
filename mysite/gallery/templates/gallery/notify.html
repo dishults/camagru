@@ -1,0 +1,8 @@
+{% autoescape off %}
+Hi {{ image.user.username }},
+
+Your picture has received a new comment from {{ from_user.username }}. Here is the link to check it out:
+
+http://{{ domain }}{% url 'homepage' %}#{{ image.id }}
+
+{% endautoescape %}
