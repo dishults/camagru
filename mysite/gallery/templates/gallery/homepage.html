@@ -44,15 +44,18 @@ Gallery
     {% endif %}
 
     <ul id="comments" class="list-group list-group-flush">
-        {% for comment in image.comment_set.all reversed %}
-        <li class="list-group-item">
-            {{ comment.comment }}
-            <p class="mb-1">
-                <span class="badge bg-primary">{{ comment.user }}</span>
-                <span class="badge bg-success rounded-pill">{{ comment.date_created }}</span>
-            </p>
-        </li>
-        {% endfor %}
+        <button name="toggle-comments" type="button" class="btn btn-outline-primary">Show Comments</button>
+        <div class="comments">
+            {% for comment in image.comment_set.all reversed %}
+            <li class="list-group-item">
+                {{ comment.comment }}
+                <p class="mb-1">
+                    <span class="badge bg-primary">{{ comment.user }}</span>
+                    <span class="badge bg-success rounded-pill">{{ comment.date_created }}</span>
+                </p>
+            </li>
+            {% endfor %}
+        </div>
     </ul>
 
     {% empty %}

@@ -7,3 +7,17 @@ img {
     width: 700px;
     padding-top: 10px;
 }
+
+#likes {
+    padding-bottom: 15px;
+}
+
+/* ul */
+#comments {
+    padding-bottom: 30px;
+}
+
+/* div */
+.comments {
+    display: none;
+}
