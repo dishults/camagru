@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 
 class Command(BaseCommand):
-    help = "Delets all users except admin."
+    help = "Delete all users except admin."
     queryset = User.objects.all()
     keep = 'admin'
 
