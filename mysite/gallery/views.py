@@ -1,10 +1,10 @@
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMessage
 from django.views.generic import ListView, FormView
-
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
+
+from utils import get_attribute
 
 from .models import Image, Like
 from .forms import CommentForm
@@ -34,8 +34,8 @@ class GalleryView(ListView, FormView):
             saved = form.save(commit=False)
             saved.user = user
             saved.save()
-            if image and image.user != user and image.user.email\
-                    and image.user.member and image.user.member.notify:
+            if get_attribute(image, 'user.email') and image.user != user\
+                    and get_attribute(image, 'user.member.notify'):
                 EmailMessage(
                     subject='New picture comment',
                     body=render_to_string('gallery/notify.html', {

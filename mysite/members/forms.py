@@ -51,6 +51,7 @@ class SettingsForm(ModelForm):
         widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
         help_text="Enter the same password as above, for verification."
     )
+    # notifications = forms.CheckboxInput()
 
     class Meta:
         model = User
