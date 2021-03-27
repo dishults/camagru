@@ -7,7 +7,7 @@ from .models import Comment, Like
 
 class CommentForm(forms.ModelForm):
 
-    comment = forms.CharField(widget=forms.Textarea(
+    comment = forms.CharField(required=False, widget=forms.Textarea(
         attrs={'rows': 3, 'cols': 1}), max_length=450)
 
     class Meta:

@@ -45,4 +45,5 @@ class GalleryView(ListView, FormView):
                     }),
                     to=[image.user.email]
                 ).send()
+        self.success_url += f'/#{image.id}'
         return super().form_valid(form)
