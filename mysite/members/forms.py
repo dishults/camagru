@@ -6,6 +6,7 @@ from django.contrib.auth.forms import (
     PasswordResetForm, SetPasswordForm, UsernameField
 )
 from django.forms.models import ModelForm
+from members.models import Member
 from utils import update_attrs_for_bootstrap
 
 
@@ -51,7 +52,6 @@ class SettingsForm(ModelForm):
         widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
         help_text="Enter the same password as above, for verification."
     )
-    # notifications = forms.CheckboxInput()
 
     class Meta:
         model = User
@@ -62,6 +62,18 @@ class SettingsForm(ModelForm):
         update_attrs_for_bootstrap(
             self.fields, ['username', 'email', 'password',
                           'new_password', 'confirm_password'])
+
+
+class NotifyForm(ModelForm):
+
+    class Meta:
+        model = Member
+        fields = ['notify']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['notify'].widget.attrs.update(
+            {'class': 'form-check-input'})
 
 
 class PasswordResetCustomForm(PasswordResetForm):

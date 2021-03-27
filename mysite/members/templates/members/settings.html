@@ -12,12 +12,28 @@ Settings
 <h5>Type new values into fields that you want to change</h5>
 <form method="post">
     {% csrf_token %}
-    <div class="col-md-4">
-        {{ form.as_p }}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                {{ settings_form.as_p }}
+                <div class="text-end">
+                    <button name="settings" type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-check form-switch">
+                    {% if notify %}
+                    <input type="checkbox" name="notify" class="form-check-input" id="id_notify" checked>
+                    {% else %}
+                    <input type="checkbox" name="notify" class="form-check-input" id="id_notify">
+                    {% endif %}
+                    <label class="form-check-label" for="flexSwitchCheckDefault">
+                        Get notified by email when your picture receives new comment
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="col-auto">
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
 </form>
 {% endblock %}

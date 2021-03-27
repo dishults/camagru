@@ -7,3 +7,7 @@ h5 {
     padding-bottom: 10px;
     color:cadetblue;
 }
+
+button[name="settings"] {
+    margin-bottom: 25px;
+}

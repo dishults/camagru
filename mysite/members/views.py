@@ -9,14 +9,16 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
 from django.http import HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
-from django.views.generic import FormView
+from django.views.generic import View, FormView
+
+from utils import get_attribute
 
 from .forms import (
-    SigninForm, SignupForm, SettingsForm,
+    NotifyForm, SigninForm, SignupForm, SettingsForm,
     PasswordResetCustomForm, SetPasswordCustomForm
 )
 
@@ -102,45 +104,72 @@ def activate(request, uidb64, token):
         return HttpResponse('Activation link is invalid!')
 
 
-class SettingsView(FormView):
+class SettingsView(View):
     template_name = 'members/settings.html'
-    context_object_name = 'members_settings_view'
-    form_class = SettingsForm
-    success_url = 'settings'
 
-    def form_valid(self, form):
-        password = form.cleaned_data.get('password')
-        if self.request.user.check_password(password):
+    def get(self, request):
+        context = {
+            'settings_form': SettingsForm(),
+            'notify': get_attribute(request, 'user.member.notify'),
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        # Update notification setting
+        notify_form = NotifyForm(request.POST)
+        notify = get_attribute(request, 'user.member.notify')
+        if notify_form.is_valid():
+            notify_setting = notify_form.cleaned_data.get('notify')
+            if notify is not None and notify != notify_setting:
+                notify = notify_setting
+                request.user.member.notify = notify
+                request.user.member.save()
+
+        # Update all other settings
+        if request.POST.get('username') == request.user.username:
+            POST = request.POST.copy()
+            POST['username'] = ''
+            settings_form = SettingsForm(POST)
+        else:
+            settings_form = SettingsForm(request.POST)
+        if not settings_form.is_valid():
+            return render(request, self.template_name,
+                          {'settings_form': settings_form, 'notify': notify})
+
+        password = settings_form.cleaned_data.get('password')
+        if request.user.check_password(password):
             try:
-                self.set_new_password(form)
+                self.set_new_password(request, settings_form)
             except ValidationError as errors:
-                form.add_error('new_password', errors)
-                return super().form_invalid(form)
+                settings_form.add_error('new_password', errors)
+                return render(request, self.template_name,
+                              {'settings_form': settings_form, 'notify': notify})
 
             for attribute in ('username', 'email'):
-                new_value = form.cleaned_data.get(attribute)
+                new_value = settings_form.cleaned_data.get(attribute)
                 if new_value:
-                    setattr(self.request.user, attribute, new_value)
+                    setattr(request.user, attribute, new_value)
 
-            self.request.user.save()
+            request.user.save()
             messages.success(
-                self.request, "You've successfully updated your profile"
+                request, "You've successfully updated your profile"
             )
         else:
-            messages.warning(self.request, "Invalid password")
-        return super().form_valid(form)
+            messages.warning(request, "Invalid password")
+        return render(request, self.template_name,
+                      {'settings_form': settings_form, 'notify': notify})
 
-    def set_new_password(self, form):
+    def set_new_password(self, request, form):
         new_password = form.cleaned_data.get("new_password")
         confirm_password = form.cleaned_data.get("confirm_password")
 
         if new_password and confirm_password and new_password == confirm_password:
             password_validation.validate_password(
-                new_password, self.request.user
+                new_password, request.user
             )
-            self.request.user.set_password(new_password)
+            request.user.set_password(new_password)
             messages.success(
-                self.request,
+                request,
                 "Your password has been updated. You are now signed out."
             )
         # Both not empty
