@@ -9,14 +9,26 @@ Editing
 {% endblock %}
 
 {% block body %}
-<div class="container">
-    <div class="row">
-        <div name="main" class="col-10">
-            Main
-        </div>
-        <div name="side" class="col">
-            Side
-        </div>
+<div class="flexbox-container">
+    <div class="main">
+        {% for overlay in overlays %}
+        <a name="{{ overlay.id }}"></a>
+        <img name="overlay" src="{{ overlay.image }}" class="rounded mx-auto d-block">
+        <br>
+        {% empty %}
+        <p>No overlays yet.</p>
+        {% endfor %}
+    </div>
+    <div class="sidebar">
+        {% for image in images %}
+        <a name="{{ image.id }}"></a>
+        <img name="thumbnail" src="{{ image.thumbnail }}" class="rounded mx-auto d-block">
+        <br>
+        {% empty %}
+        <p>No images yet.</p>
+        {% endfor %}
     </div>
 </div>
+
+
 {% endblock %}

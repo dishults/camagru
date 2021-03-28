@@ -1,0 +1,15 @@
+img[name="overlay"] {
+    max-width: 200px;
+}
+
+.flexbox-container {
+    display: flex;
+}
+
+.main {
+    flex: 3;
+}
+
+.side {
+    flex: 1;
+}
