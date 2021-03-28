@@ -1,5 +1,6 @@
 from io import BytesIO
 from django.db import models
+from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from PIL import Image as PILImage
@@ -47,6 +48,15 @@ class Image(models.Model):
         super().save(*args, **kwargs)
         if not self.thumbnail:
             self.create_thumbnail()
+
+    def delete(self, *args, **kwargs):
+        deleted = super().delete(*args, **kwargs)
+        try:
+            self.image.delete(save=False)
+            self.thumbnail.delete(save=False)
+        except Exception:
+            pass
+        return deleted
 
 
 class Comment(models.Model):
