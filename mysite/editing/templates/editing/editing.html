@@ -10,25 +10,49 @@ Editing
 
 {% block body %}
 <div class="flexbox-container">
-    <div class="main">
-        {% for overlay in overlays %}
-        <a name="{{ overlay.id }}"></a>
-        <img name="overlay" src="{{ overlay.image }}" class="rounded mx-auto d-block">
-        <br>
-        {% empty %}
-        <p>No overlays yet.</p>
-        {% endfor %}
+    <div name="main" class="container">
+        <ul class="list-inline">
+            {% for overlay in overlays %}
+            <li class="list-inline-item">
+                <a name="{{ overlay.id }}"></a>
+                <img name="overlay" src="{{ overlay.image }}" class="rounded mx-auto d-block">
+                <br>
+                {% empty %}
+                <p>No overlays yet.</p>
+                {% endfor %}
+            </li>
+        </ul>
     </div>
-    <div class="sidebar">
-        {% for image in images %}
-        <a name="{{ image.id }}"></a>
-        <img name="thumbnail" src="{{ image.thumbnail }}" class="rounded mx-auto d-block">
-        <br>
-        {% empty %}
-        <p>No images yet.</p>
-        {% endfor %}
+
+    <div class="sidebar d-flex flex-column align-items-stretch bg-white" style="width: 380px;">
+        <a name="{{ image.id }}" href="/"
+            class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
+            <svg class="bi me-2" width="30" height="24">
+                <use xlink:href="#bootstrap"></use>
+            </svg>
+            <strong class="fs-5">Your images</strong>
+        </a>
+        <div class="list-group list-group-flush border-bottom scrollarea">
+            {% for image in images %}
+            <div class="list-group-item list-group-item-action py-3 lh-tight">
+                <div class="d-flex w-100 align-items-center justify-content-between">
+                    <a href="{{ image.image.url }}">
+                        <img name="thumbnail" src="{{ image.thumbnail }}" class="rounded mx-auto d-block">
+                    </a>
+                    <a href="{% url 'delete_image' image.id %}">
+                        <small name="trash-emoji" class="text-muted">&#128465;</small>
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <a href="#" class="list-group-item list-group-item-action py-3 lh-tight">
+                <div class="d-flex w-100 align-items-center justify-content-between">
+                    <strong class="mb-1">No images yet</strong>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
     </div>
 </div>
-
 
 {% endblock %}
