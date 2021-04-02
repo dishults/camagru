@@ -9,13 +9,13 @@ Editing
 {% endblock %}
 
 {% block body %}
-<div class="flexbox-container">
+<div class="d-flex">
     <div name="main" class="container">
         <ul class="list-inline">
             {% for overlay in overlays %}
             <li class="list-inline-item">
                 <a name="{{ overlay.id }}"></a>
-                <img name="overlay" src="{{ overlay.image }}" class="rounded mx-auto d-block">
+                <img name="overlay" src="{{ overlay.image }}" class="rounded mx-auto d-inline p-3">
                 <br>
                 {% empty %}
                 <p>No overlays yet.</p>
@@ -24,7 +24,7 @@ Editing
         </ul>
     </div>
 
-    <div class="sidebar d-flex flex-column align-items-stretch bg-white" style="width: 380px;">
+    <div class="sidebar d-inline-flex flex-column align-items-stretch bg-white d-none d-lg-block">
         <a name="{{ image.id }}" href="/"
             class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
             <svg class="bi me-2" width="30" height="24">
@@ -40,7 +40,7 @@ Editing
                         <img name="thumbnail" src="{{ image.thumbnail }}" class="rounded mx-auto d-block">
                     </a>
                     <a href="{% url 'delete_image' image.id %}">
-                        <small name="trash-emoji" class="text-muted">&#128465;</small>
+                        <small name="delete-thumbnail" class="text-muted">&#128465;</small>
                     </a>
                 </div>
             </div>

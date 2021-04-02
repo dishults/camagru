@@ -1,15 +1,15 @@
+a {
+    text-decoration: none;
+}
+
 img[name="overlay"] {
     max-width: 200px;
 }
 
-.flexbox-container {
-    display: flex;
+img[name="thumbnail"] {
+    max-width: 80%;
 }
 
-.main {
-    flex: 3;
-}
-
-.side {
-    flex: 1;
+.sidebar {
+    width: 450px;
 }
