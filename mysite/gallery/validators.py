@@ -3,16 +3,15 @@ from django.core.files.images import get_image_dimensions
 
 
 def validate_size(image):
+    minimum, maximum = 300, 1920
     width, height = get_image_dimensions(image)
-    if width > 1920 or width < 300:
+    if width < minimum or width > maximum:
         raise ValidationError(
-            '%(width)s is incorrect width. It should be 300-1920 pixels',
-            code='invalid',
-            params={'width': width},
+            '%(width)s is incorrect width. It should be %(minimum)s-%(maximum)s pixels',
+            params={'width': width, 'minimum': minimum, 'maximum': maximum},
         )
-    elif height > 1920 or height < 300:
+    elif height < minimum or height > maximum:
         raise ValidationError(
-            '%(height)s is incorrect height. It should be 300-1920 pixels',
-            code='invalid',
-            params={'height': height},
+            '%(height)s is incorrect height. It should be %(minimum)s-%(maximum)s pixels',
+            params={'height': height, 'minimum': minimum, 'maximum': maximum},
         )
