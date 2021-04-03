@@ -23,9 +23,13 @@ Editing
             </li>
         </ul>
 
-        <div id="webcam">
+        <div id="webcam" class="camera">
             <h5>Take a picture</h5>
-            <video autoplay="true" id="videoElement"></video>
+            <div class="camera">
+                <video autoplay="true" id="video"></video>
+                <button id="camera_button" type="submit" class="btn btn-outline-primary mt-1">&#128248;</button>
+            </div>
+            <canvas id="canvas"></canvas>
         </div>
 
         <form id="upload" method="post" enctype="multipart/form-data">

@@ -20,6 +20,9 @@ class Image(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    class Meta:
+        ordering = ['-id']
+
     def __str__(self):
         return self.image.name
 
