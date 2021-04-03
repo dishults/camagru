@@ -9,11 +9,11 @@ Gallery
 {% endblock %}
 
 {% block body %}
-{% for image in object_list %}
-<a name="{{ image.id }}"></a>
-<img src="{{ image.image }}" class="rounded mx-auto d-block">
+{% for image in object_list reversed %}
 
 <div id="images" class="mx-auto">
+    <a name="{{ image.id }}"></a>
+    <img src="{{ image.image }}" class="rounded mx-auto d-block">
 
     {% if user.is_authenticated %}
     <form method="post">
