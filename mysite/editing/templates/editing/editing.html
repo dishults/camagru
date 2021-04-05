@@ -14,7 +14,7 @@ Editing
         <ul class="list-inline">
             {% for overlay in overlays %}
             <li class="list-inline-item">
-                <a name="overlays">
+                <a name="overlays" id="{{ overlay.id }}">
                     <img name="overlay" src="{{ overlay.image }}" class="rounded mx-auto d-inline p-3">
                 </a>
 
@@ -36,7 +36,7 @@ Editing
         <h5>Preview</h5>
         <canvas id="canvas"></canvas>
 
-        <form id="upload" method="post" enctype="multipart/form-data">
+        <form id="upload_form" method="post" enctype="multipart/form-data">
             {{ form.non_field_errors }}
             <h5>Upload a picture</h5>
             {% csrf_token %}
@@ -49,8 +49,7 @@ Editing
     </div>
 
     <div class="sidebar d-inline-flex flex-column align-items-stretch bg-white d-none d-lg-block">
-        <a name="{{ image.id }}" href="/"
-            class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
+        <a class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
             <svg class="bi me-2" width="30" height="24">
                 <use xlink:href="#bootstrap"></use>
             </svg>
@@ -60,7 +59,7 @@ Editing
             {% for image in images %}
             <div class="list-group-item list-group-item-action py-3 lh-tight">
                 <div class="d-flex w-100 align-items-center justify-content-between">
-                    <a name="thumbnails">
+                    <a name="thumbnails" id="{{ image.id }}">
                         <img name="thumbnail" src="{{ image.thumbnail }}" class="rounded mx-auto d-block">
                     </a>
                     <a href="{% url 'delete_image' image.id %}"

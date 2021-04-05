@@ -13,6 +13,9 @@
     var upload = document.getElementById('id_image');
     var imageString = document.getElementById('id_image_string');
 
+    var selectedImage = 0;
+    var selectedOverlays = new Set([0]);
+
     if (navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia({ video: true, audio: false })
             .then(stream => {
@@ -57,6 +60,7 @@
     });
 
     function applyOverlay() {
+        selectedOverlays.add(this.getAttribute('id'));
         const image = this.children[0];
         preview.drawImage(image, 0, 0, width, height);
     }
@@ -67,6 +71,7 @@
 
     function loadImage() {
         upload.value = '';
+        selectedImage = this.getAttribute('id');
         const imageThumb = this.children[0];
         const imageFull = new Image();
         imageFull.src = '/static/images/' + imageThumb.src.split('/').slice(-1)[0];
@@ -79,5 +84,9 @@
     thumbnails.forEach(item => {
         item.addEventListener('click', loadImage);
     });
+
+    document.getElementById("upload_form").onsubmit = function () {
+        imageString.value = `image:${selectedImage};overlays:${Array.from(selectedOverlays)};${imageString.value}`
+    };
 
 })();
