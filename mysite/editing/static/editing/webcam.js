@@ -67,13 +67,13 @@
 
     function loadImage() {
         upload.value = '';
-        const image = this.children[0];
-        const imageElem = new Image();
-        imageElem.src = '/static/images/' + image.src.split('/').slice(-1)[0];
+        const imageThumb = this.children[0];
+        const imageFull = new Image();
+        imageFull.src = '/static/images/' + imageThumb.src.split('/').slice(-1)[0];
 
-        height = imageElem.height / (imageElem.width / width);
+        height = imageFull.height / (imageFull.width / width);
         preview.clearRect(0, 0, canvas.width, canvas.height);
-        preview.drawImage(imageElem, 0, 0, width, height);
+        preview.drawImage(imageFull, 0, 0, width, height);
     }
 
     thumbnails.forEach(item => {
