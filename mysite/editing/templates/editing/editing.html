@@ -25,18 +25,24 @@ Editing
 
         <div id="webcam" class="camera">
             <h5>Take a picture</h5>
-            <div class="camera">
-                <video autoplay="true" id="video"></video>
-                <button id="camera_button" type="submit" class="btn btn-outline-primary mt-1">&#128248;</button>
-            </div>
-            <canvas id="canvas"></canvas>
+            <video autoplay="true" id="video"></video>
+            <br>
+            <button id="snapshot" type="submit" class="btn btn-outline-success mt-1">&#128248;</button>
         </div>
+        <br>
+
+        <h5>Preview</h5>
+        <canvas id="canvas"></canvas>
 
         <form id="upload" method="post" enctype="multipart/form-data">
+            {{ form.non_field_errors }}
             <h5>Upload a picture</h5>
             {% csrf_token %}
-            {{ form.as_p }}
-            <button id="upload" type="submit" class="btn btn-primary mt-1">Upload</button>
+            {{ form.image.errors }}
+            {{ form.image_string.errors }}
+            {{ form.image }}
+            {{ form.image_string }}
+            <button id="upload" type="submit" class="btn btn-primary mt-1" value="upload">Upload</button>
         </form>
     </div>
 
