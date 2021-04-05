@@ -14,8 +14,10 @@ Editing
         <ul class="list-inline">
             {% for overlay in overlays %}
             <li class="list-inline-item">
-                <a name="{{ overlay.id }}"></a>
-                <img name="overlay" src="{{ overlay.image }}" class="rounded mx-auto d-inline p-3">
+                <a name="overlays">
+                    <img name="overlay" src="{{ overlay.image }}" class="rounded mx-auto d-inline p-3">
+                </a>
+
                 <br>
                 {% empty %}
                 <p>No overlays yet.</p>
@@ -58,7 +60,7 @@ Editing
             {% for image in images %}
             <div class="list-group-item list-group-item-action py-3 lh-tight">
                 <div class="d-flex w-100 align-items-center justify-content-between">
-                    <a href="{{ image.image.url }}">
+                    <a name="thumbnails">
                         <img name="thumbnail" src="{{ image.thumbnail }}" class="rounded mx-auto d-block">
                     </a>
                     <a href="{% url 'delete_image' image.id %}"
