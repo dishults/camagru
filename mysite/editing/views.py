@@ -5,6 +5,8 @@ from django.shortcuts import redirect, render
 from django.views.generic import View
 from django.core.files.images import ImageFile
 
+from PIL import Image as PILImage
+
 from gallery.models import Image
 
 from .forms import ImageForm
@@ -61,12 +63,24 @@ class EditingView(View):
                 image = ImageFile(image)
 
                 image = Image(image=image, user=request.user)
-                image.image.save('snapshot.jpg', buffer, save=True)
+                image.image.save('snapshot.jpg', buffer)
                 return self.get(request)
 
             # From existing image
             elif image_id:
-                # TODO: superpose the images
+                original = request.user.image_set.get(id=image_id)
+                overlays = Overlay.objects.filter(id__in=overlay_ids)
+
+                original = PILImage.open(original.image).convert('RGBA')
+                for overlay in overlays:
+                    overlay = PILImage.open(overlay.image).convert('RGBA')
+                    original.alpha_composite(overlay.resize(original.size))
+
+                image = ImageFile(original.tobytes())
+                buffer = BytesIO()
+                original.convert('RGB').save(buffer, format="JPEG")
+                image = Image(image=image, user=request.user)
+                image.image.save('snapshot.jpg', buffer)
                 return self.get(request)
 
         # Form is invalid or something went wrong

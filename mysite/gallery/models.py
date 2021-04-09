@@ -29,23 +29,10 @@ class Image(models.Model):
     def create_thumbnail(self):
         image = PILImage.open(self.image)
         image.thumbnail(size=(310, 230))
-        image_file = BytesIO()
-        image.save(image_file, image.format)
-        path = self.image.name.split('/')[-1]
-        self.thumbnail.save(
-            path,
-            # file, field_name, name, content_type, size, charset, content_type_extra=None
-            InMemoryUploadedFile(
-                file=image_file,
-                field_name=None,
-                name='',
-                content_type='image/jpeg',
-                size=image.size,
-                charset=None,
-            ),
-            save=False,
-        )
-        super().save(force_update=True)
+        file = BytesIO()
+        image.save(file, image.format)
+        name = self.image.name.split('/')[-1]
+        self.thumbnail.save(name, file)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
