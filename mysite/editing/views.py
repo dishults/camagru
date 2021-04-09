@@ -22,14 +22,14 @@ class EditingView(View):
     def post(self, request):
         # Initial variables
         image_form = ImageForm(request.POST, request.FILES)
-        image = request.POST.get('image_string')
+        snapshot = request.POST.get('image_string')
 
         if image_form.is_valid():
             # Get headers and image if it comes from a snapshot
             try:
-                headers, image = image.split(';base64,')
+                headers, snapshot = snapshot.split(';base64,')
             except ValueError:
-                headers, image = image, None
+                headers, snapshot = snapshot, None
 
             # Get image id and overlay ids
             # E.g. headers -> image:0;overlays:0,3;data:image/png
@@ -46,27 +46,21 @@ class EditingView(View):
                 return render(request, self.template_name,
                               self.get_context(request, image_form))
 
-            # From upload
-            if image_form.files:
-                # TODO: superpose the images
-                image = image_form.save(commit=False)
-                image.user = request.user
-                image.save()
-                return self.get(request)
+            # Merge image with overlays
+            image = None
+            try:
+                if image_form.files:  # From upload
+                    image = image_form.files.get('image')
+                elif snapshot:  # From snapshot
+                    image = BytesIO(b64decode(snapshot))
+                elif image_id:  # From existing image
+                    image = request.user.image_set.get(id=image_id).image
 
-            # From snapshot
-            elif image:
-                image = BytesIO(b64decode(image))
-                image = PILImage.open(image)
-                self.superpose_images(image, overlay_ids, request.user)
+                self.merge_image_with_overlays(
+                    image, overlay_ids, request.user)
                 return self.get(request)
-
-            # From existing image
-            elif image_id:
-                original = request.user.image_set.get(id=image_id)
-                original = PILImage.open(original.image).convert('RGBA')
-                self.superpose_images(original, overlay_ids, request.user)
-                return self.get(request)
+            except Exception:
+                pass
 
         # Form is invalid or something went wrong
         return render(request, self.template_name,
@@ -81,18 +75,19 @@ class EditingView(View):
         }
 
     @staticmethod
-    def superpose_images(original, overlay_ids, user):
-        buffer = BytesIO()
-        overlays = Overlay.objects.filter(id__in=overlay_ids)
+    def merge_image_with_overlays(image, overlay_ids, user):
+        image = PILImage.open(image).convert('RGBA')
 
-        for overlay in overlays:
+        for overlay in Overlay.objects.filter(id__in=overlay_ids):
             overlay = PILImage.open(overlay.image).convert('RGBA')
-            original.alpha_composite(overlay.resize(original.size))
+            image.alpha_composite(overlay.resize(image.size))
 
-        image = ImageFile(original.tobytes())
-        original.convert('RGB').save(buffer, format="JPEG")
-        image = Image(image=image, user=user)
-        image.image.save('snapshot.jpg', buffer)
+        buffer = BytesIO()
+        image.convert('RGB').save(buffer, format="JPEG")
+
+        file = ImageFile(buffer)
+        file = Image(image=file, user=user)
+        file.image.save('snapshot.jpg', buffer)
 
 
 def delete_image(request, image_id):
