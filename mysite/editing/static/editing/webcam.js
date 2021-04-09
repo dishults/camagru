@@ -38,8 +38,8 @@
     }
 
     snapshot.addEventListener('click', () => {
+        clearImage();
         upload.value = '';
-        preview.clearRect(0, 0, canvas.width, canvas.height);
         preview.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         imageString.value = canvas.toDataURL('image/png');
@@ -47,11 +47,10 @@
 
     upload.addEventListener('change', function (e) {
         if (this.files && this.files[0]) {
-            imageString.value = '';
+            clearImage();
             var image = new Image();
             image.onload = function () {
                 height = image.height / (image.width / width);
-                preview.clearRect(0, 0, canvas.width, canvas.height);
                 preview.drawImage(image, 0, 0, width, height);
             }
             image.src = URL.createObjectURL(this.files[0]);;
@@ -69,7 +68,9 @@
         item.addEventListener('click', applyOverlay);
     });
 
+
     function loadImage() {
+        clearImage();
         upload.value = '';
         selectedImage = this.getAttribute('id');
         const imageThumb = this.children[0];
@@ -84,6 +85,15 @@
     thumbnails.forEach(item => {
         item.addEventListener('click', loadImage);
     });
+
+    function clearImage() {
+        selectedImage = 0;
+        imageString.value = '';
+        selectedOverlays.clear();
+        selectedOverlays.add(0);
+
+        preview.clearRect(0, 0, canvas.width, canvas.height);
+    }
 
     document.getElementById("upload_form").onsubmit = function () {
         imageString.value = `image:${selectedImage};overlays:${Array.from(selectedOverlays)};${imageString.value}`
