@@ -56,31 +56,16 @@ class EditingView(View):
 
             # From snapshot
             elif image:
-                # TODO: superpose the images
-                image = b64decode(image)
-
-                buffer = BytesIO(image)
-                image = ImageFile(image)
-
-                image = Image(image=image, user=request.user)
-                image.image.save('snapshot.jpg', buffer)
+                image = BytesIO(b64decode(image))
+                image = PILImage.open(image)
+                self.superpose_images(image, overlay_ids, request.user)
                 return self.get(request)
 
             # From existing image
             elif image_id:
                 original = request.user.image_set.get(id=image_id)
-                overlays = Overlay.objects.filter(id__in=overlay_ids)
-
                 original = PILImage.open(original.image).convert('RGBA')
-                for overlay in overlays:
-                    overlay = PILImage.open(overlay.image).convert('RGBA')
-                    original.alpha_composite(overlay.resize(original.size))
-
-                image = ImageFile(original.tobytes())
-                buffer = BytesIO()
-                original.convert('RGB').save(buffer, format="JPEG")
-                image = Image(image=image, user=request.user)
-                image.image.save('snapshot.jpg', buffer)
+                self.superpose_images(original, overlay_ids, request.user)
                 return self.get(request)
 
         # Form is invalid or something went wrong
@@ -94,6 +79,20 @@ class EditingView(View):
             'overlays': Overlay.objects.all(),
             'form': form or ImageForm(),
         }
+
+    @staticmethod
+    def superpose_images(original, overlay_ids, user):
+        buffer = BytesIO()
+        overlays = Overlay.objects.filter(id__in=overlay_ids)
+
+        for overlay in overlays:
+            overlay = PILImage.open(overlay.image).convert('RGBA')
+            original.alpha_composite(overlay.resize(original.size))
+
+        image = ImageFile(original.tobytes())
+        original.convert('RGB').save(buffer, format="JPEG")
+        image = Image(image=image, user=user)
+        image.image.save('snapshot.jpg', buffer)
 
 
 def delete_image(request, image_id):
