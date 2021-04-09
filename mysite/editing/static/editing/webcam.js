@@ -11,10 +11,14 @@
     var thumbnails = document.getElementsByName('thumbnails');
     var snapshot = document.getElementById('snapshot');
     var upload = document.getElementById('id_image');
+    var uploadButton = document.getElementById('upload');
     var imageString = document.getElementById('id_image_string');
 
     var selectedImage = 0;
     var selectedOverlays = new Set([0]);
+
+    uploadButton.disabled = true;
+    preview.empty = true;
 
     if (navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia({ video: true, audio: false })
@@ -38,20 +42,21 @@
     }
 
     snapshot.addEventListener('click', () => {
-        clearImage();
-        upload.value = '';
+        clearImage(true);
         preview.drawImage(video, 0, 0, canvas.width, canvas.height);
+        preview.empty = false;
 
         imageString.value = canvas.toDataURL('image/png');
     }, false);
 
     upload.addEventListener('change', function (e) {
         if (this.files && this.files[0]) {
-            clearImage();
+            clearImage(false);
             var image = new Image();
             image.onload = function () {
                 height = image.height / (image.width / width);
                 preview.drawImage(image, 0, 0, width, height);
+                preview.empty = false;
             }
             image.src = URL.createObjectURL(this.files[0]);;
             URL.revokeObjectURL(image.src);
@@ -61,6 +66,7 @@
     function applyOverlay() {
         selectedOverlays.add(this.getAttribute('id'));
         const image = this.children[0];
+        if (!preview.empty) uploadButton.disabled = false;
         preview.drawImage(image, 0, 0, width, height);
     }
 
@@ -70,29 +76,30 @@
 
 
     function loadImage() {
-        clearImage();
-        upload.value = '';
+        clearImage(true);
         selectedImage = this.getAttribute('id');
         const imageThumb = this.children[0];
         const imageFull = new Image();
         imageFull.src = '/static/images/' + imageThumb.src.split('/').slice(-1)[0];
 
         height = imageFull.height / (imageFull.width / width);
-        preview.clearRect(0, 0, canvas.width, canvas.height);
         preview.drawImage(imageFull, 0, 0, width, height);
+        preview.empty = false;
     }
 
     thumbnails.forEach(item => {
         item.addEventListener('click', loadImage);
     });
 
-    function clearImage() {
+    function clearImage(clearUpload) {
+        if (clearUpload) upload.value = '';
         selectedImage = 0;
         imageString.value = '';
         selectedOverlays.clear();
         selectedOverlays.add(0);
-
         preview.clearRect(0, 0, canvas.width, canvas.height);
+        preview.empty = true;
+        uploadButton.disabled = true;
     }
 
     document.getElementById("upload_form").onsubmit = function () {

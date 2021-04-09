@@ -43,12 +43,12 @@ class EditingView(View):
                 # Convert numbers and disregard the first one which is always 0
                 overlay_ids = [int(o) for o in overlay_ids.split(',')][1:]
             except Exception:
-                return render(request, self.template_name,
-                              self.get_context(request, image_form))
+                pass
 
             # Merge image with overlays
             image = None
             try:
+                assert overlay_ids
                 if image_form.files:  # From upload
                     image = image_form.files.get('image')
                 elif snapshot:  # From snapshot
