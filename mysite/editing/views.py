@@ -31,24 +31,19 @@ class EditingView(View):
             except ValueError:
                 headers, snapshot = snapshot, None
 
-            # Get image id and overlay ids
-            # E.g. headers -> image:0;overlays:0,3;data:image/png
+            # Get image id and overlay id
+            # E.g. headers -> image:0;overlay:3;data:image/png
             try:
-                # Get only image and overlays data
-                image_id, overlay_ids = headers.split(';')[:2]
-                # Get number and convert it
+                # Get only image and overlay data
+                image_id, overlay_id = headers.split(';')[:2]
                 image_id = int(image_id.split(':')[1])
-                # Get numbers
-                overlay_ids = overlay_ids.split(':')[1]
-                # Convert numbers and disregard the first one which is always 0
-                overlay_ids = [int(o) for o in overlay_ids.split(',')][1:]
+                overlay_id = int(overlay_id.split(':')[1])
             except Exception:
                 pass
 
-            # Merge image with overlays
+            # Merge image with overlay
             image = None
             try:
-                assert overlay_ids
                 if image_form.files:  # From upload
                     image = image_form.files.get('image')
                 elif snapshot:  # From snapshot
@@ -56,8 +51,9 @@ class EditingView(View):
                 elif image_id:  # From existing image
                     image = request.user.image_set.get(id=image_id).image
 
-                self.merge_image_with_overlays(
-                    image, overlay_ids, request.user)
+                overlay = Overlay.objects.get(id=overlay_id).image
+                self.merge_image_with_overlay(
+                    image, overlay, request.user)
                 return self.get(request)
             except Exception:
                 pass
@@ -75,12 +71,10 @@ class EditingView(View):
         }
 
     @staticmethod
-    def merge_image_with_overlays(image, overlay_ids, user):
+    def merge_image_with_overlay(image, overlay, user):
         image = PILImage.open(image).convert('RGBA')
-
-        for overlay in Overlay.objects.filter(id__in=overlay_ids):
-            overlay = PILImage.open(overlay.image).convert('RGBA')
-            image.alpha_composite(overlay.resize(image.size))
+        overlay = PILImage.open(overlay).convert('RGBA')
+        image.alpha_composite(overlay.resize(image.size))
 
         buffer = BytesIO()
         image.convert('RGB').save(buffer, format="JPEG")

@@ -5,7 +5,7 @@
 
     var canvas = document.getElementById('canvas');
     var preview = canvas.getContext('2d');
-    preview.empty = true;
+    preview.image = null;
 
     // **************** Snapshot ****************
     var video = document.getElementById("video");
@@ -36,9 +36,10 @@
     snapshot.addEventListener('click', () => {
         clearImage(true);
         preview.drawImage(video, 0, 0, canvas.width, canvas.height);
-        preview.empty = false;
+        preview.image = video;
 
         imageString.value = canvas.toDataURL('image/png');
+        window.location.hash = '#overlays';
     }, false);
 
     // **************** Upload ****************
@@ -48,15 +49,16 @@
 
     upload.addEventListener('change', function (e) {
         if (this.files && this.files[0]) {
-            clearImage(false);
+            clearImage();
             var image = new Image();
             image.onload = function () {
                 height = image.height / (image.width / width);
                 preview.drawImage(image, 0, 0, width, height);
-                preview.empty = false;
+                preview.image = image;
             }
             image.src = URL.createObjectURL(this.files[0]);;
             URL.revokeObjectURL(image.src);
+            window.location.hash = '#overlays';
         }
     });
 
@@ -73,7 +75,8 @@
 
         height = imageFull.height / (imageFull.width / width);
         preview.drawImage(imageFull, 0, 0, width, height);
-        preview.empty = false;
+        preview.image = imageFull;
+        window.location.hash = '#overlays';
     }
 
     thumbnails.forEach(item => {
@@ -82,13 +85,18 @@
 
     // **************** Overlay ****************
     var overlays = document.getElementsByName('overlays');
-    var selectedOverlays = new Set([0]);
+    var selectedOverlay = 0;
 
     function applyOverlay() {
-        selectedOverlays.add(this.getAttribute('id'));
+        selectedOverlay = this.getAttribute('id');
         const image = this.children[0];
-        if (!preview.empty) uploadButton.disabled = false;
-        preview.drawImage(image, 0, 0, width, height);
+        if (preview.image) {
+            preview.clearRect(0, 0, canvas.width, canvas.height);
+            preview.drawImage(preview.image, 0, 0, width, height);
+            preview.drawImage(image, 0, 0, width, height);
+            uploadButton.disabled = false;
+            window.location.hash = uploadButton.id;
+        }
     }
 
     overlays.forEach(item => {
@@ -96,19 +104,28 @@
     });
 
     // **************** Other ****************
+
     function clearImage(clearUpload) {
-        if (clearUpload) upload.value = '';
-        selectedImage = 0;
-        imageString.value = '';
-        selectedOverlays.clear();
-        selectedOverlays.add(0);
         preview.clearRect(0, 0, canvas.width, canvas.height);
-        preview.empty = true;
+        preview.image = null;
+        window.location.hash = '';
+
+        // snapshot
+        imageString.value = '';
+
+        // upload
+        if (clearUpload) upload.value = '';
         uploadButton.disabled = true;
+
+        // thumbnail
+        selectedImage = 0;
+
+        // overlay
+        selectedOverlay = 0;
     }
 
     document.getElementById("upload_form").onsubmit = function () {
-        imageString.value = `image:${selectedImage};overlays:${Array.from(selectedOverlays)};${imageString.value}`
+        imageString.value = `image:${selectedImage};overlay:${selectedOverlay};${imageString.value}`
     };
 
 })();

@@ -6,11 +6,34 @@ Editing
 
 {% block page_name %}
 <h1>Editing</h1>
+<h6>Take a picture, upload or choose exisiting one -> choose an overlay -> submit</h6>
 {% endblock %}
 
 {% block body %}
 <div class="d-flex">
     <div name="main" class="container">
+        <div id="webcam" class="camera">
+            <div class="d-inline-flex align-items-center justify-content-between">
+                <h5>Take a picture</h5>
+                <button id="snapshot" type="submit" class="btn btn-outline-success m-3">&#128248;</button>
+            </div>
+            <video autoplay="true" id="video"></video>
+        </div>
+        <br>
+
+        <form id="upload_form" method="post" enctype="multipart/form-data">
+            {{ form.non_field_errors }}
+            <h5>Upload a picture</h5>
+            {% csrf_token %}
+            {{ form.image.errors }}
+            {{ form.image_string.errors }}
+            {{ form.image }}
+            {{ form.image_string }}
+            <button id="upload" type="submit" class="btn btn-primary mt-2 p-2" value="upload">Submit</button>
+        </form>
+
+        <br>
+        <h5 id="overlays">Choose an overlay</h5>
         <ul class="list-inline">
             {% for overlay in overlays %}
             <li class="list-inline-item">
@@ -25,27 +48,8 @@ Editing
             </li>
         </ul>
 
-        <div id="webcam" class="camera">
-            <h5>Take a picture</h5>
-            <video autoplay="true" id="video"></video>
-            <br>
-            <button id="snapshot" type="submit" class="btn btn-outline-success mt-1">&#128248;</button>
-        </div>
-        <br>
-
         <h5>Preview</h5>
         <canvas id="canvas"></canvas>
-
-        <form id="upload_form" method="post" enctype="multipart/form-data">
-            {{ form.non_field_errors }}
-            <h5>Upload a picture</h5>
-            {% csrf_token %}
-            {{ form.image.errors }}
-            {{ form.image_string.errors }}
-            {{ form.image }}
-            {{ form.image_string }}
-            <button id="upload" type="submit" class="btn btn-primary mt-1" value="upload">Upload</button>
-        </form>
     </div>
 
     <div class="sidebar d-inline-flex flex-column align-items-stretch bg-white d-none d-lg-block">
