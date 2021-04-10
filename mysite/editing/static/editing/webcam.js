@@ -1,15 +1,15 @@
-var width = 500;    // We will scale the photo width to this
-var height = width / (4 / 3);     // This will be computed based on the input stream
+const width = 500;    // We will scale the photo width to this
+let height = width / (4 / 3);     // This will be computed based on the input stream
 
-var canvas = document.getElementById('canvas');
-var preview = canvas.getContext('2d');
+const canvas = document.getElementById('canvas');
+const preview = canvas.getContext('2d');
 preview.image = null;
 window.location.hash = '';
 
 // **************** Snapshot ****************
-var video = document.getElementById("video");
-var snapshot = document.getElementById('snapshot');
-var imageString = document.getElementById('id_image_string');
+const video = document.getElementById("video");
+const snapshot = document.getElementById('snapshot');
+const imageString = document.getElementById('id_image_string');
 
 if (navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
@@ -43,14 +43,14 @@ snapshot.addEventListener('click', () => {
 }, false);
 
 // **************** Upload ****************
-var upload = document.getElementById('id_image');
-var uploadButton = document.getElementById('upload');
+const upload = document.getElementById('id_image');
+const uploadButton = document.getElementById('upload');
 uploadButton.disabled = true;
 
 upload.addEventListener('change', function (e) {
     if (this.files && this.files[0]) {
         clearImage();
-        var image = new Image();
+        const image = new Image();
         image.onload = function () {
             height = image.height / (image.width / width);
             preview.drawImage(image, 0, 0, width, height);
@@ -63,14 +63,14 @@ upload.addEventListener('change', function (e) {
 });
 
 // **************** Thumbnail ****************
-var thumbnails = document.getElementsByName('thumbnails');
-var selectedImage = 0;
+const thumbnails = document.getElementsByName('thumbnails');
+let selectedImage = 0;
 
 function loadImage() {
     clearImage(true);
     selectedImage = this.getAttribute('id');
     const imageThumb = this.children[0];
-    var imageFull = new Image();
+    const imageFull = new Image();
     imageFull.onload = function () {
         height = imageFull.height / (imageFull.width / width);
         preview.drawImage(imageFull, 0, 0, width, height);
@@ -85,8 +85,8 @@ thumbnails.forEach(item => {
 });
 
 // **************** Overlay ****************
-var overlays = document.getElementsByName('overlays');
-var selectedOverlay = 0;
+const overlays = document.getElementsByName('overlays');
+let selectedOverlay = 0;
 
 function applyOverlay() {
     selectedOverlay = this.getAttribute('id');
