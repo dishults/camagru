@@ -54,7 +54,7 @@ class EditingView(View):
                 overlay = Overlay.objects.get(id=overlay_id).image
                 self.merge_image_with_overlay(
                     image, overlay, request.user)
-                return self.get(request)
+                return redirect('editing')
             except Exception:
                 pass
 

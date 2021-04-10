@@ -6,6 +6,7 @@
     var canvas = document.getElementById('canvas');
     var preview = canvas.getContext('2d');
     preview.image = null;
+    window.location.hash = '';
 
     // **************** Snapshot ****************
     var video = document.getElementById("video");
@@ -70,12 +71,13 @@
         clearImage(true);
         selectedImage = this.getAttribute('id');
         const imageThumb = this.children[0];
-        const imageFull = new Image();
+        var imageFull = new Image();
+        imageFull.onload = function () {
+            height = imageFull.height / (imageFull.width / width);
+            preview.drawImage(imageFull, 0, 0, width, height);
+            preview.image = imageFull;
+        }
         imageFull.src = '/static/images/' + imageThumb.src.split('/').slice(-1)[0];
-
-        height = imageFull.height / (imageFull.width / width);
-        preview.drawImage(imageFull, 0, 0, width, height);
-        preview.image = imageFull;
         window.location.hash = '#overlays';
     }
 
