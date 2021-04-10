@@ -2,7 +2,9 @@ from django.contrib import admin
 
 from .models import Overlay
 
+from gallery.admin import ImageAdmin
+
 
 @admin.register(Overlay)
-class OverlayAdmin(admin.ModelAdmin):
+class OverlayAdmin(ImageAdmin):
     pass

@@ -3,6 +3,12 @@ from django.contrib import admin
 from .models import Image, Comment, Like
 
 
+class ImageAdmin(admin.ModelAdmin):
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            obj.delete()
+
+
 class CommentInline(admin.TabularInline):
     model = Comment
 
@@ -12,7 +18,7 @@ class LikeInline(admin.TabularInline):
 
 
 @admin.register(Image)
-class GalleryAdmin(admin.ModelAdmin):
+class GalleryAdmin(ImageAdmin):
     inlines = [CommentInline, LikeInline]
 
 

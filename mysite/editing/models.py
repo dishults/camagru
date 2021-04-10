@@ -10,3 +10,11 @@ class Overlay(models.Model):
 
     def __str__(self):
         return self.image.name
+
+    def delete(self, *args, **kwargs):
+        deleted = super().delete(*args, **kwargs)
+        try:
+            self.image.delete(save=False)
+        except Exception:
+            pass
+        return deleted
