@@ -3,7 +3,7 @@ from django.core.files.images import get_image_dimensions
 
 
 def validate_size(image):
-    minimum, maximum = 300, 1920
+    minimum, maximum = 300, 2560
     width, height = get_image_dimensions(image)
     if width < minimum or width > maximum:
         raise ValidationError(
