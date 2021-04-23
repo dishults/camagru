@@ -130,3 +130,5 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'shultspi@gmail.com'
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
