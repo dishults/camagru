@@ -1,4 +1,3 @@
-let elems = document.querySelectorAll('.helptext');
-elems.forEach((elem) => {
+document.querySelectorAll('.helptext').forEach((elem) => {
     elem.className = 'form-text text-muted';
 });

@@ -10,31 +10,40 @@
     {% block script %}{% endblock %}
 </head>
 
-<header style="padding: 30px;">
-    <a href="{% url 'homepage' %}"><button class='btn btn-outline-primary float-start'>Homepage</button></a>
-    {% if user.is_authenticated %}
-    <a href="{% url 'editing' %}"><button class='btn btn-outline-secondary float-start'>Editing</button></a>
-    <a href="{% url 'signout' %}"><button class='btn btn-outline-success float-end'>Sign out</button></a>
-    <a href="{% url 'settings' %}"><button class='btn btn-outline-secondary float-end'>Settings</button></a>
-    {% else %}
-    <a href="{% url 'signin' %}"><button class='btn btn-outline-success float-end'>Sign in</button></a>
-    {% endif %}
-</header>
-
 <body>
-    <div class="container">
-        {% block page_name %}{% endblock %}
-
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}" role="alert" style="margin-top: 40px">
-            {{ message }}
+    <header style="padding: 30px;">
+        <div class="container">
+            <a href="{% url 'homepage' %}"><button class='btn btn-outline-primary float-start'>Homepage</button></a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'editing' %}"><button class='btn btn-outline-secondary float-start'>Editing</button></a>
+            <a href="{% url 'signout' %}"><button class='btn btn-outline-success float-end'>Sign out</button></a>
+            <a href="{% url 'settings' %}"><button class='btn btn-outline-secondary float-end'>Settings</button></a>
+            {% else %}
+            <a href="{% url 'signin' %}"><button class='btn btn-outline-success float-end'>Sign in</button></a>
+            {% endif %}
         </div>
-        {% endfor %}
-        {% endif %}
+    </header>
 
-        {% block body %}{% endblock %}
-    </div>
+    <main class="flex">
+        <div class="container">
+            {% block page_name %}{% endblock %}
+
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" role="alert" style="margin-top: 40px">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% block body %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container text-center">
+            <span class="text-muted">42 - Camagru - Have fun</span>
+        </div>
+    </footer>
 </body>
 
 </html>

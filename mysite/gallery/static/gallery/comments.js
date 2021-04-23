@@ -1,4 +1,4 @@
-var button = document.getElementsByName("toggle-comments");
+const button = document.getElementsByName("toggle-comments");
 
 for (var i = 0; i < button.length; i++) {
   button[i].addEventListener("click", function () {
