@@ -6,19 +6,15 @@ Editing
 
 {% block page_name %}
 <h1>Editing</h1>
-<h6>Take a picture, upload or choose exisiting one -> choose an overlay -> submit</h6>
 {% endblock %}
 
 {% block body %}
 <div class="d-flex">
     <div name="main" class="container">
-        <div id="webcam" class="camera">
-            <div class="d-inline-flex align-items-center justify-content-between">
-                <h5>Take a picture</h5>
-                <button id="snapshot" type="submit" class="btn btn-outline-success m-3">&#128248;</button>
-            </div>
-            <br>
+        <div id="webcam">
+            <h5>Take a picture</h5>
             <video autoplay="true" id="video"></video>
+            <button id="snapshot" type="submit" class="btn btn-outline-success">&#128248;</button>
         </div>
         <br>
 
@@ -30,27 +26,30 @@ Editing
             {{ form.image_string.errors }}
             {{ form.image }}
             {{ form.image_string }}
-            <button id="upload" type="submit" class="btn btn-primary mt-2 p-2" value="upload">Submit</button>
         </form>
-
         <br>
-        <h5 id="overlays">Choose an overlay</h5>
-        <ul class="list-inline">
-            {% for overlay in overlays %}
-            <li class="list-inline-item">
-                <a name="overlays" id="{{ overlay.id }}">
-                    <img name="overlay" src="{{ overlay.image }}" class="rounded mx-auto d-inline p-3">
-                </a>
 
-                <br>
-                {% empty %}
-                <p>No overlays yet.</p>
-                {% endfor %}
-            </li>
-        </ul>
+        <div id="overlays">
+            <h4>Choose an overlay</h4>
+            <ul class="list-inline">
+                {% for overlay in overlays %}
+                <li class="list-inline-item">
+                    <a name="overlays" id="{{ overlay.id }}">
+                        <img name="overlay" src="{{ overlay.image }}" class="rounded mx-auto d-inline p-3">
+                    </a>
+
+                    <br>
+                    {% empty %}
+                    <p>No overlays yet.</p>
+                    {% endfor %}
+                </li>
+            </ul>
+        </div>
 
         <h5>Preview</h5>
         <canvas id="canvas"></canvas>
+        <button id="upload" type="submit" class="btn btn-outline-primary" value="upload"
+            form="upload_form">Submit</button>
     </div>
 
     <div class="sidebar d-inline-flex flex-column align-items-stretch bg-white d-none d-lg-block">
@@ -58,7 +57,7 @@ Editing
             <svg class="bi me-2" width="30" height="24">
                 <use xlink:href="#bootstrap"></use>
             </svg>
-            <strong class="fs-5">Your images</strong>
+            <h5 class="fs-5">Choose a picture</h5>
         </a>
         <div class="list-group list-group-flush border-bottom scrollarea">
             {% for image in images %}

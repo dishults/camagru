@@ -13,3 +13,26 @@ img[name="thumbnail"] {
 .sidebar {
     width: 450px;
 }
+
+/* Webcam */
+#video {
+    width: 100%;
+    max-width: 500px;
+}
+
+#canvas {
+    width: 100%;
+    max-width: 500px;
+}
+
+/* Buttons */
+#snapshot {
+    width: 100%;
+    max-width: 500px;
+}
+
+#upload {
+    margin-bottom: 25px;
+    width: 100%;
+    max-width: 500px;
+}

@@ -21,9 +21,6 @@
                 if (isNaN(height)) {
                     height = width / (4 / 3);
                 }
-
-                video.setAttribute('width', width);
-                video.setAttribute('height', height);
             })
             .catch(err => {
                 document.getElementById('webcam').hidden = true;
@@ -98,6 +95,8 @@
             preview.drawImage(image, 0, 0, width, height);
             uploadButton.disabled = false;
             window.location.hash = uploadButton.id;
+        } else {
+            alert("Take/upload/choose a picture first and then apply an overlay ;)");
         }
     }
 
