@@ -39,14 +39,18 @@ class Image(models.Model):
         if not self.thumbnail:
             self.create_thumbnail()
 
-    def delete(self, *args, **kwargs):
-        deleted = super().delete(*args, **kwargs)
-        try:
-            self.image.delete(save=False)
-            self.thumbnail.delete(save=False)
-        except Exception:
-            pass
-        return deleted
+
+@receiver(models.signals.post_delete, sender=Image)
+def remove_static_files(sender, instance, **kwargs):
+    """
+    Delete static image and thumbnail
+    when corresponding Image object is deleted.
+    """
+    try:
+        instance.image.delete(save=False)
+        instance.thumbnail.delete(save=False)
+    except Exception:
+        pass
 
 
 class Comment(models.Model):

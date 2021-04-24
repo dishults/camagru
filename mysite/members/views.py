@@ -115,6 +115,20 @@ class SettingsView(View):
         return render(request, self.template_name, context)
 
     def post(self, request):
+        # Check password first
+        password = request.POST.get('password')
+        if not request.user.check_password(password):
+            messages.warning(request, "Invalid password")
+            return self.get(request)
+
+        # Delete profile
+        if request.POST.get('settings') == 'delete':
+            user = request.user
+            logout(request)
+            user.delete()
+            messages.success(request, "Your profile has been deleted")
+            return redirect(SigninView.success_url)
+
         # Update notification setting
         notify_form = NotifyForm(request.POST)
         notify = get_attribute(request, 'user.member.notify')
@@ -136,26 +150,22 @@ class SettingsView(View):
             return render(request, self.template_name,
                           {'settings_form': settings_form, 'notify': notify})
 
-        password = settings_form.cleaned_data.get('password')
-        if request.user.check_password(password):
-            try:
-                self.set_new_password(request, settings_form)
-            except ValidationError as errors:
-                settings_form.add_error('new_password', errors)
-                return render(request, self.template_name,
-                              {'settings_form': settings_form, 'notify': notify})
+        try:
+            self.set_new_password(request, settings_form)
+        except ValidationError as errors:
+            settings_form.add_error('new_password', errors)
+            return render(request, self.template_name,
+                          {'settings_form': settings_form, 'notify': notify})
 
-            for attribute in ('username', 'email'):
-                new_value = settings_form.cleaned_data.get(attribute)
-                if new_value:
-                    setattr(request.user, attribute, new_value)
+        for attribute in ('username', 'email'):
+            new_value = settings_form.cleaned_data.get(attribute)
+            if new_value:
+                setattr(request.user, attribute, new_value)
 
-            request.user.save()
-            messages.success(
-                request, "You've successfully updated your profile"
-            )
-        else:
-            messages.warning(request, "Invalid password")
+        request.user.save()
+        messages.success(
+            request, "You've successfully updated your profile"
+        )
         return render(request, self.template_name,
                       {'settings_form': settings_form, 'notify': notify})
 
