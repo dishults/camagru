@@ -21,7 +21,7 @@ from .forms import (
     NotifyForm, SigninForm, SignupForm, SettingsForm,
     PasswordResetCustomForm, SetPasswordCustomForm
 )
-
+from .models import Member
 from .tokens import account_activation_token
 
 
@@ -71,6 +71,7 @@ class SignupView(FormView):
         user = form.save(commit=False)
         user.is_active = False
         user.save()
+        Member.objects.create(user=user)
         EmailMessage(
             subject='Activate your account to access Camagru.',
             body=render_to_string('members/acc_active_email.html', {
