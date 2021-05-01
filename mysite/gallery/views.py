@@ -1,21 +1,34 @@
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.paginator import Paginator
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMessage
-from django.views.generic import ListView, FormView
+from django.shortcuts import render
 from django.template.loader import render_to_string
 
 from utils import get_attribute
+from views import FormView
 
 from .models import Image, Like
 from .forms import CommentForm
 
 
-class GalleryView(ListView, FormView):
+class GalleryView(FormView):
     model = Image
     paginate_by = 5
     template_name = 'gallery/homepage.html'
     form_class = CommentForm
     success_url = '/'
+
+    def get(self, request, form=None):
+        number = request.GET.get('page', 1)
+        if not hasattr(self, 'paginated'):
+            queryset = self.model.objects.all()
+            self.paginated = Paginator(queryset, self.paginate_by)
+        context = {
+            'form': form or self.form_class(),
+            'page_obj': self.paginated.page(number),
+        }
+        return render(request, self.template_name, context)
 
     def form_valid(self, form):
         image = form.cleaned_data.get('image')
