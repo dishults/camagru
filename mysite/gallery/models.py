@@ -48,6 +48,9 @@ def remove_static_files(sender, instance, **kwargs):
     """
     try:
         instance.image.delete(save=False)
+    except Exception:
+        pass
+    try:
         instance.thumbnail.delete(save=False)
     except Exception:
         pass
