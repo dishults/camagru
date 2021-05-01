@@ -1,11 +1,10 @@
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.paginator import Paginator
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMessage
 from django.shortcuts import render
 from django.template.loader import render_to_string
 
-from utils import get_attribute
+from utils import get_attribute, Paginator
 from views import FormView
 
 from .models import Image, Like
@@ -20,7 +19,7 @@ class GalleryView(FormView):
     success_url = '/'
 
     def get(self, request, form=None):
-        number = request.GET.get('page', 1)
+        number = int(request.GET.get('page', 1))
         if not hasattr(self, 'paginated'):
             queryset = self.model.objects.all()
             self.paginated = Paginator(queryset, self.paginate_by)
