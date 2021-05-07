@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'django_extensions',
+    'django_extensions',
     'editing.apps.EditingConfig',
     'gallery.apps.GalleryConfig',
     'members.apps.MembersConfig',
@@ -127,7 +127,7 @@ STATICFILES_DIRS = [PROJECT_DIR / 'static']
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'shultspi@gmail.com'
+EMAIL_HOST_USER = '42dshults@gmail.com'
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
 

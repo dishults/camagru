@@ -3,9 +3,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMessage
 from django.shortcuts import render
 from django.template.loader import render_to_string
+from django.views.generic import FormView
 
 from utils import get_attribute, Paginator
-from views import FormView
 
 from .models import Image, Like
 from .forms import CommentForm
@@ -28,6 +28,12 @@ class GalleryView(FormView):
             'page_obj': self.paginated.page(number),
         }
         return render(request, self.template_name, context)
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            return self.form_valid(form)
+        return self.get(request, form)
 
     def form_valid(self, form):
         image = form.cleaned_data.get('image')

@@ -27,7 +27,6 @@ from .tokens import account_activation_token
 
 class SigninView(FormView):
     template_name = 'members/signin.html'
-    context_object_name = 'members_signin_view'
     form_class = SigninForm
     success_url = '/'
 
@@ -56,7 +55,6 @@ def signout_view(request):
 
 class SignupView(FormView):
     template_name = 'members/signup.html'
-    context_object_name = 'members_signup_view'
     form_class = SignupForm
     success_url = '/'
 
